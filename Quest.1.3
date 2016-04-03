@@ -1,0 +1,386 @@
+import time
+import random
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# Maps below
+Levels = {
+    "stage1" : ["X","X","X","X","X","X","X","X","X","X","H","O","O","O","O","O","U","X","X","X","X","X","X","X","X","X","X","X","X"],
+    "stage2" : ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","O","O","O","O","O","O","O","O","O","O","O","O","O","U","X","X","O","O","O","O","O","O","O","O","O","O","O","O","O","O","X","X","H","O","O","O","O","O","O","O","O","O","O","O","O","O","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"],
+    "stage3" : ['X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','H','X','T','O','X','O','O','O','O','O','O','O','X','X','O','X','X','O','O','O','X','X','X','O','X','X','X','X','O','X','X','X','X','O','X','O','X','O','X','U','X','X','O','O','O','O','O','O','X','O','X','O','O','O','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'],
+    "stage4" : ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'U', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'H', 'O', 'X', 'O', 'O', 'O', 'X', 'O', 'O', 'O', 'X', 'O', 'O', 'O', 'O', 'O', 'X', 'X', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'X', 'X', 'O', 'O', 'O', 'X', 'O', 'O', 'O', 'X', 'O', 'O', 'O', 'O', 'O', 'O', 'T', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+}
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+#Below sets the character's stats bases on Race
+class Character(object):
+    def __init__(self,Name,Race):
+        self.Name = Name
+        self.Race = Race
+        self.Inventory = {}
+        self.Generate_Race()
+    def Generate_Race(self):
+		if self.Race == "Orc":
+			self.Health = 5
+			self.Damage = 2
+			self.Speed = 1
+			self.Inventory["Weapon"] = "Fist"
+			self.Inventory["Armor"] = "Scraps"
+		elif self.Race == "Human":
+			self.Health = 5
+			self.Damage = 2
+			self.Speed = 1
+			self.Inventory["Weapon"] = "Fist"
+			self.Inventory["Armor"] = "Scraps"
+		elif self.Race == "Elf":
+			self.Health = 5
+			self.Damage = 2
+			self.Speed = 1
+			self.Inventory["Weapon"] = "Fist"
+			self.Inventory["Armor"] = "Scraps"
+
+class Monster(object):
+    def __init__(self,Name,Damage,Health,Look):
+		self.Name = Name
+		self.Damage = Damage
+		self.Health = Health
+		self.Look = Look
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# Beginning
+print "Welcome to a world of dungeons!  Lucky for you, dungeons are your favorite past time!  However, you have gotten yourself into a real pickle."
+print "You are lost.  In addition to that, you decided to venture into one of the most dangerous dungeons in the land; how convenient!"
+print "Before you proceed could you answer two questions for me?"
+
+race = ""
+name = ""
+
+while race != "Orc" and race != "Human" and race != "Elf":
+    name = raw_input("What is your name?:")
+    race = raw_input("Which race are you?(Orc, Human, Elf):")
+    if race != "Orc" and race != "Human" and race != "Elf":
+        print "Sorry didn't catch that."
+        race = raw_input("Which race are you?(Orc, Human, Elf):")
+
+p1 = Character(name, race)
+
+print "Good luck, %s the %s!  Your adventure begins..." % (p1.Name, p1.Race)
+time.sleep(1)
+
+currentLevel = Levels["stage1"]
+gameGo = True
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# Global Variables
+currentStage = 1
+currentMonter = "Holder"
+Treasure = {1 : "Goblin Toe"} # get tressure like this:  XXXTOOXXOOOOOOOOOOXXXXXX you get treasure based on if you can move to the O near the T !!Not any more!!
+damageTaken = 0
+equipmentBonus = 0
+globalCount = len(currentLevel)
+
+monsterFight = True
+monsterHealth = 0
+
+pDModifier = 0
+pHModifier = 0
+
+playerHealth = p1.Health + pHModifier
+totalDamage = p1.Damage + pDModifier
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# Monsters
+Monsters = {
+	1 : Monster("Cave Bear", 1, 3, "^_______^\n|  . .  |\n|  <>   |\n | Y   |"),
+	2 : Monster("Goblin Grunt", 1, 2, "  ____~\n [_____]\n[_______]\n| o  o |\n | ^ _ |\n  |-| ||"),
+	3 : Monster("Goblin Great", 2, 4, "lame"),
+	4 : Monster("Bat", 1, 1, " ^^\n|..|\n^||^\n ``"),
+	5 : Monster("Snake", 2, 1, "  _____\n<o--_--o>\n  <-|->\n    ^"),
+}
+
+numMon = len(Monsters)
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# O is empty space, X is wall, Y is enemy, H is hero or you, U is the goal, V is button, T is treasure
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+def damageModifiers():
+	global pDModifier
+	if p1.Inventory["Weapon"] == "Fist":
+		pDModifier = 0
+	elif p1.Inventory["Weapon"] == "Wood Sword":
+		pDModifier = 1
+
+def healthModifiers():
+        global pHModifier
+        if p1.Inventory["Armor"] == "Scraps":
+                pHModifier = 0
+
+def fight():
+	global currentMonster
+	global totalDamage
+	global currentLevel
+	global monsterHealth
+	global playerHealth
+	if monsterFight == True:
+		print "Oh snap a %s appeared!" % (currentMonster.Name)
+		print currentMonster.Look
+		print "%s HP:" % (currentMonster.Name) + "*" * monsterHealth
+		pMove = raw_input("attack? run?")
+		if pMove == "attack":
+			print " "
+			print "You swing your %s and hit the %s for %s damage" % (p1.Inventory["Weapon"], currentMonster.Name, totalDamage)
+			monsterHealth -= totalDamage
+			if monsterHealth <= 0:
+				print " "
+				print "You killed the %s!  Good work." % (currentMonster.Name)
+				print prntLVL(currentLevel)
+				print playerAction(currentLevel)
+			elif monsterHealth > 0:
+				print " "
+				print "The %s still has %s health!" % (currentMonster.Name, monsterHealth)
+				print "The %s does %s damage to you!" % (currentMonster.Name, currentMonster.Damage)
+				playerHealth -= currentMonster.Damage
+				print "%s HP:" % (p1.Name) + "*" * playerHealth
+				print " "
+				if playerHealth <= 0:
+					print " "
+					print "|-- Game Over -->"
+					print " "
+					print "|-- You died to a %s. -->" % (currentMonster.Name)
+					print " "
+					print "|-- Your body will never be found. -->"
+					time.sleep(2)
+					print " "
+					retrylvl = raw_input("Retry Level? (y,n)")
+					if retrylvl == "y":
+						print playerAction(currentLevel)
+					elif retrylvl == "n":
+						print "Welp, got nothing for you.  See ya sucker."
+						print "Press ctrl + c to exit"
+						time.sleep(15)
+						print "The games over buddy.  Please leave..."
+						time.sleep(30)
+						print "Come on.  Go.  Shoo."
+						time.sleep(15)
+						print "Fine you can play again."
+						fight()
+					else:
+						print "You are dead and can only say y or n.  Dead people don't get many options.  You can sign up for Dead People Sufferage."
+						retrylvl = raw_input("Retry Level? (y,n)")
+			elif playerHealth > 0:
+				fight()
+		elif pMove == "run":
+			print "Not today!"
+		elif pMove == "Fart about":
+			print "Clever they will never see that coming!"
+			time.sleep(2)
+			print "You stare deeply into the eyes of the %s" % (currentMonster.Name)
+			time.sleep(2)
+			print "Yeah you have got him now.  He has no idea what to do now."
+			time.sleep(2)
+			print "Uh oh.  You took your eyes off the %s and now you don't know where it is." % (currentMonster.Name)
+			time.sleep(1)
+			print "Dread quickly pours over you.  Why did you chose inaction?  You are in for it now."
+			time.sleep(3)
+			print "Looks like its gone."
+			time.sleep(4)
+			print "What was that?!"
+			time.sleep(3)
+			print "There it is again!"
+			time.sleep(2)
+			print "It's getting closer!"
+			time.sleep(1)
+			print "NOOOO"
+			time.sleep(5)
+			print "You died.  Moral is...Never fart."
+			time.sleep(1)
+			print "Press ctrl + c to exit"
+			time.sleep(30)
+			print "You are dead.  Leave."
+			time.sleep(15)
+			print "Jeez.  Fine.  Hope you are happy."
+			fight()
+		elif pMove != "attack" or pMove != "run":
+			print "That's not going to work."
+			print " "
+			fight()
+
+def prntLVL(lvl):
+    lvlCount = 0 #length of level
+    rowCount = 0 #length of each row to be printed
+    count = 0
+    count2 = count + 1
+    rowList = []
+    for i in lvl:
+        lvlCount += 1
+    for i in lvl:
+        if i == "H" or i == "O" or i == "U":
+            rowCount -= 1
+            break
+        else:
+            rowCount += 1
+    times = int(lvlCount/rowCount)
+    while count < times:
+        count2 = count + 1
+        rowList[:] = []
+        for letter in range(rowCount * count, rowCount * count2):
+            rowList.append(lvl[letter])
+        for i in rowList:
+            print i,
+        print " "
+        count += 1
+
+def nextLevel():
+    global globalCount
+    global gameGo
+    global currentLevel
+    currentLevel = Levels["stage" + str(currentStage)]
+    globalCount = len(currentLevel)
+    gameGo = True
+    mainLoop()
+
+def checkWin():
+    global currentStage
+    global globalCount
+    global gameGo
+    globalCount = len(currentLevel)
+    for i in currentLevel:
+        if i != "U":
+            globalCount -= 1
+        elif i == "U":
+            globalCount += 1
+    if globalCount == 0:
+        gameGo = False
+        print "<******==******>"
+        print "|  -Victory!-  |"
+        print "|--------------|"
+        print "|Level Complete|"
+        print "<******==******>"
+        print " "
+        time.sleep(3)
+        currentStage += 1
+        nextLevel()
+
+def health():
+    maximumHealth = int(p1.Health + equipmentBonus)
+    currentHealth = int(maximumHealth) - int(damageTaken)
+    print "HP:" + " " + "*" * currentHealth
+    if currentHealth == 0:
+        print "<-<Game Over>->"
+        prntLVL(currentLevel)
+        playerAction(currentLevel)
+
+def playerAction(lvl):
+    Last = 0
+    for i in lvl:
+            if i != "H":
+                Last += 1
+            elif i == "H":
+                break
+    row = 0
+    for i in lvl:
+        if i == "H" or i == "O" or i == "U":
+            row -= 1
+            break
+        else:
+            row += 1
+    turn = raw_input("up? down? left? right?:")
+    rMove = int(Last + p1.Speed)
+    lMove = int(Last - p1.Speed)
+    uMove = int(Last - row)
+    dMove = int(Last + row)
+    if turn == "right":
+        if lvl[rMove] == "X":
+            print "You can't move there!"
+            print playerAction(lvl)
+        elif lvl[rMove] == "T":
+            print "You found treasure! It's a %s" % (Treasure[1])
+            print playerAction(lvl)
+        lvl[rMove] = "H"
+        lvl[Last] = "O"
+        print " "
+        checkWin()
+        monsterCode()
+        print prntLVL(lvl)
+        print health()
+        print playerAction(lvl)
+    elif turn == "left":
+        if lvl[lMove] == "X":
+            print "You can't move there!"
+            print playerAction(lvl)
+        elif lvl[lMove] == "T":
+            print "You found treasure! It's a %s" % (Treasure[1])
+            lvl[Last] = "O"
+            print playerAction(lvl)
+        lvl[lMove] = "H"
+        lvl[Last] = "O"
+        print " "
+        checkWin()
+        monsterCode()
+        print prntLVL(lvl)
+        print health()
+        print playerAction(lvl)
+    elif turn == "up":
+        if lvl[uMove] == "X":
+            print "You can't move there!"
+            print playerAction(lvl)
+        elif lvl[uMove] == "T":
+            print "You found treasure! It's a %s" % (Treasure[1])
+            lvl[Last] = "O"
+            print playerAction(lvl)
+        lvl[uMove] = "H"
+        lvl[Last] = "O"
+        print " "
+        checkWin()
+        monsterCode()
+        print prntLVL(lvl)
+        print health()
+        print playerAction(lvl)
+    elif turn == "down":
+        if lvl[dMove] == "X":
+            print "You can't move there!"
+            print playerAction(lvl)
+        elif lvl[dMove] == "T":
+            print "You found treasure! It's a %s" % (Treasure[1])
+            lvl[Last] = "O"
+            print playerAction(lvl)
+        lvl[dMove] = "H"
+        lvl[Last] = "O"
+        print " "
+        checkWin()
+        monsterCode()
+        print prntLVL(lvl)
+        print health()
+        print playerAction(lvl)
+    elif turn != "right" or turn != "left" or turn != "up" or turn != "down":
+        print "You can't do that!"
+        print playerAction(lvl)
+
+def monsterCode():
+        global currentMonster
+        global hitOrMiss
+        global monsterHealth
+        global playerHealth
+        battle = random.randint(1,5)
+        monRan = random.randint(1,numMon)
+        hitOrMiss = random.randint(1,50)
+        if battle == 1:
+                currentMonster = Monsters[monRan]
+                monsterHealth = currentMonster.Health
+                monsterFight = True
+                fight()
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+def mainLoop():
+    while gameGo == True:
+        print " "
+        print "Level" + " " + str(currentStage)
+        prntLVL(currentLevel)
+        print health()
+        print playerAction(currentLevel)
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+mainLoop()
